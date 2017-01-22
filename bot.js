@@ -19,13 +19,26 @@ bot.on("ready", () => {
   rssChannel = bot.channels.get(config.rssChannelID);
   //console.log(rssChannel);
 //  console.log(config.rssChannelID);
-  checkForRSS();
-  setInterval(checkForRSS, 60*1000);
+
+  //checkForRSS();
+  //setInterval(checkForRSS, 60*1000);
+
+
+  console.log("test has been called");
+  var text = "these are the patchnotes to the lastest article on mmo-champion here is a super awseome image [http://media.mmo-champion.com/images/news/2017/january/thumb/PitofSaronDK.jpg] and here is another super awesome image [http://media.mmo-champion.com/images/news/2017/january/thumb/PitofSaronDK.jpg] now lets talk about things that are things because they are things.";
+  var i = 0;
+
+  text ="abc[defghijklmnop";
+  console.log("true == false: ")
+  console.log(true == false);
+  console.log("text.charAt(3) == [ : ");
+  console.log(text.charAt(3) == "[");
+
+
+
+
+
 });
-
-
-
-
 
 
 bot.on("voiceStateUpdate", (oldMember, member) => {
@@ -84,9 +97,17 @@ bot.on("message", message => {
   }
 
   if(message.content.startsWith(config.prefix + "test")){
-    let botRole = message.member.guild.roles.find("name", "bot");
-    console.log(botRole.id);
-    //message.member.setVoiceChannel("270109306668580865");
+
+
+
+    //var lastWhiteSpace = 0;
+    // while (i < text.length) {
+    //   while (i < text.length && i < 2000 - 1) {
+    //
+    //
+    //   }
+    //
+    // }
   }
 
   if(message.content.startsWith(config.prefix + "website") || message.content.startsWith(config.prefix + "site")){
@@ -217,6 +238,9 @@ function rssfeed(url,count){
     console.log(item.date);
     console.log("Posting Article");
     rssChannel.sendMessage("**************** Article Start ****************");
+
+
+
     rssChannel.sendMessage(text, {split:true});
 
 
