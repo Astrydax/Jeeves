@@ -4,74 +4,20 @@ const config = require("./config.json");
 const moment = require("moment");
 //var chalk = require("chalk");
 const bot = new Discord.Client();
+bot.login(config.token);
 
 var rssChannel;
-
-
-bot.login(config.token);
 
 var users = JSON.parse(fs.readFileSync("./users.json", "utf8"));
 var rss = JSON.parse(fs.readFileSync("./rss.json", "utf8"));
 
 
 bot.on("ready", () => {
+  //say hello
   console.log(`Logged in as ${bot.user.username}!`);
   rssChannel = bot.channels.get(config.rssChannelID);
-  //console.log(rssChannel);
-//  console.log(config.rssChannelID);
-
-  //checkForRSS();
-  //setInterval(checkForRSS, 60*1000);
-
-
-  //console.log("test has been called");
-  var text = "these are the patchnotes to the lastest article on mmo-champion here is a super awseome image [http://placehold.it/350x150] and here is another super awesome image [http://media.mmo-champion.com/images/news/2017/january/thumb/PitofSaronDK.jpg] now lets talk about things that are things because they are things.";
-  var i = 0;
-  var j = 0;
-  var lastWhiteSpaceIndex = 0;
-  var lastOpenBrack = 0;
-  var lastCloseBrack = 0;
-  //console.log(text);
-  //console.log(text.substring(0,4));
-
-  while (i < text.length) {
-
-    //console.log("Begining of loop. Index: " +i);
-
-    let char = text.charAt(i);
-    //console.log("char: " + char);
-
-    if(char == " "){
-      lastWhiteSpaceIndex = i;
-    }
-    if(char == "["){
-      lastOpenBrack = i;
-    }
-    if(char == "]"){
-      lastCloseBrack = i;
-      var wrappedLink = text.substring(lastOpenBrack, lastCloseBrack + 1);
-      //console.log(wrappedLink);
-      var rawLink = text.substring(lastOpenBrack + 1, lastCloseBrack);
-      //console.log(rawLink);
-      console.log(text.substring(0, lastOpenBrack)+"\n");
-      console.log(rawLink +"\n");
-      text = text.slice(lastCloseBrack + 2);
-      i = -1;
-
-    }
-    if(i == text.length -1){
-      console.log(text + "\n");
-    }
-
-
-
-
-    i++;
-  }
-
-
-
-
+  checkForRSS();
+  setInterval(checkForRSS, 60*1000);
 });
 
 
@@ -86,16 +32,8 @@ bot.on("voiceStateUpdate", (oldMember, member) => {
   // //  move to private channel
   //   member.setVoiceChannel("270109306668580865");
   //  play audio file
-
   //  mark orientation true in DB
-
-
 });
-
-
-
-
-
 
 bot.on("message", message => {
   if(message.author.bot) return;
@@ -116,39 +54,32 @@ bot.on("message", message => {
   const params = message.content.split(" ").slice(1);
 
   //************************COMMANDS START HERE************************
+
+// .# RSS command DEPRECATED
   if(message.content.startsWith(config.prefix + "wownews")){
     var count = 1;
-    var url = "http://www.mmo-champion.com/external.php?do=rss&type=newcontent&sectionid=1&days=120&count=10";
+    var url = config.rssURL;
     if(parseInt(params[0]) != null && parseInt(params[0]) != "" && !isNaN(parseInt(params[0]))){
       count = parseInt(params[0]);
     }
     rssfeed(url,count);
   }
 
-
+// .# spoiler command
   if(message.content.startsWith(config.prefix + "spoiler")){
     message.channel.sendMessage("LEAKED PATCH 7.2 TOMB OF SARGARAS ENDING \n https://www.youtube.com/watch?v=NOudUXxWPSs");
   }
-
+// .# test command
   if(message.content.startsWith(config.prefix + "test")){
-
-
-
-
-    // while (i < text.length) {
-    //   while (i < text.length && i < 2000 - 1) {
-    //
-    //
-    //   }
-    //
-    // }
+    //test command    
+    console.log("running test code");
   }
-
+// .# website command
   if(message.content.startsWith(config.prefix + "website") || message.content.startsWith(config.prefix + "site")){
     message.channel.sendMessage("Official Guild Website:  http://hardknox.enjin.com/");
   }
 
-
+// ,# pawn and simc command
   if (message.content.startsWith(config.prefix + "statvid") || message.content.startsWith(config.prefix + "pawnvid")) {
     message.channel.sendMessage("Here ya go! https://www.youtube.com/watch?v=XmtgInKDCos");
   }
@@ -165,11 +96,11 @@ bot.on("message", message => {
     userData.level = curLevel;
     message.reply(`You"ve leveled up to level **${curLevel}**! Ain"t that dandy?`);
   }
-
+// .# level Command
   if(message.content.startsWith(config.prefix + "level")) {
     message.reply(`You are  currently level ${userData.level}, with ${userData.points} points.`);
   }
-
+// .# silence command
   if(message.content.startsWith(config.prefix + "silence")) {
     let voiceChannel = message.member.voiceChannel;
     if (!voiceChannel) {
@@ -184,9 +115,7 @@ bot.on("message", message => {
         });
       });
   }
-
-
-//prune command
+// .# prune command
   if(message.content.startsWith(config.prefix+"prune") || message.content.startsWith(config.prefix+"purge")) {
      // get number of messages to prune
     if(message.author.id == "119351283999047682" || message.author.id == "118792784642703360")
@@ -196,7 +125,6 @@ bot.on("message", message => {
         message.reply("Prune command cannot be used in officer channels in order to prevent accidental purging of important info");
       }else{
         let messagecount = parseInt(params[0]);
-
      // get the channel logs
         if(messagecount > 0){
           message.channel.fetchMessages({limit: 100})
@@ -208,7 +136,6 @@ bot.on("message", message => {
             msg_array.length = messagecount + 1;
        // Has to delete messages individually. Cannot use `deleteMessages()` on selfbots.
             msg_array.map(m => m.delete().catch(console.error));
-
           });}else{
           message.reply("\nusage:!purg |1-100| or !prune |1-100| . \n Example: typing   !prune 42   will delete the last 42 messages");
         }
@@ -217,16 +144,10 @@ bot.on("message", message => {
       message.reply("I can't let you do that Dave. You do not have permission to use this command.");
     }
   }
-
-
-
-  //console.log("\n" + chalk.cyan(JSON.stringify(users)));
   fs.writeFile("./users.json", JSON.stringify(users), (err) => {if(err) console.error(err);});
 });
 
 function rssfeed(url,count){
-
-
   var FeedParser = require("feedparser");
   var feedparser = new FeedParser();
   var request = require("request");
@@ -262,22 +183,14 @@ function rssfeed(url,count){
       console.log("No new article found");
       return;
     }
-
-
     var htmlToText = require("html-to-text");
     var text = htmlToText.fromString(item.description,{wordwrap:false,ignoreHref:false, ignoreImage:false});
-    text=text.replace(/[\[\]"]+/g,"\n");
+    //text=text.replace(/[\[\]"]+/g,"\n");
     rssChannel.sendMessage(item.title);
     rssChannel.sendMessage(item.date);
     console.log(item.date);
-    console.log("Posting Article");
-    rssChannel.sendMessage("**************** Article Start ****************");
-
-
-
-    rssChannel.sendMessage(text, {split:true});
-
-
+    parseFeed(text);
+    //rssChannel.sendMessage(text, {split:true});
       // msg.channel.sendMessage(item.title + " - " + item.link, function() {
       //     if(full == true){
       //         var text2 = htmlToText.fromString(item.description,{
@@ -295,7 +208,39 @@ function rssfeed(url,count){
 function checkForRSS(){
   console.log("Checking RSS feed for new articles...");
   var count = 1;
-  var url = "http://www.mmo-champion.com/external.php?do=rss&type=newcontent&sectionid=1&days=120&count=10";
+  var url = config.rssURL;
   rssfeed(url,count);
+}
 
+function parseFeed(text){
+  console.log("Posting Article");
+  rssChannel.sendMessage("`**************** Article Start ****************`");
+  var i = 0;
+  //var lastWhiteSpaceIndex = 0;
+  var lastOpenBrack = 0;
+  var lastCloseBrack = 0;
+
+  while (i < text.length) {
+    let char = text.charAt(i);
+    if(char == " "){
+      //lastWhiteSpaceIndex = i;
+    }
+    if(char == "["){
+      lastOpenBrack = i;
+    }
+    if(char == "]"){
+      lastCloseBrack = i;
+      //var wrappedLink = text.substring(lastOpenBrack, lastCloseBrack + 1);
+      var rawLink = text.substring(lastOpenBrack + 1, lastCloseBrack);
+      rssChannel.sendMessage(text.substring(0, lastOpenBrack)); //everything before the discovered link
+      rssChannel.sendMessage(rawLink); // the raw link
+      text = text.slice(lastCloseBrack + 2); // delete everything prior to the space after the first link
+      i = -1; //reset index for newly trimmed string and continue looping
+    }
+    //dump the trailing text
+    if(i == text.length -1){
+      rssChannel.sendMessage(text);
+    }
+    i++;
+  }
 }
