@@ -1,0 +1,7 @@
+{
+	"token": "magic letters, your bot token",
+	"prefix": "! ",
+	"ownerID": "User ID of bot owner, probably yours",
+	"rssChannelID": "Channel ID for rss feed channel"
+
+}
