@@ -1,11 +1,17 @@
+*.json
+!package.json
+*.txt
+console.bat
+*.sdo
+!.eslintrc.json
+
+
+
 # Logs
 logs
 *.log
 npm-debug.log*
 
-*.json
-!package.json
-*.txt
 
 
 # Runtime data
@@ -34,6 +40,7 @@ build/Release
 # Dependency directories
 node_modules
 jspm_packages
+audio
 
 # Optional npm cache directory
 .npm
