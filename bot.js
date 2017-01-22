@@ -24,16 +24,50 @@ bot.on("ready", () => {
   //setInterval(checkForRSS, 60*1000);
 
 
-  console.log("test has been called");
-  var text = "these are the patchnotes to the lastest article on mmo-champion here is a super awseome image [http://media.mmo-champion.com/images/news/2017/january/thumb/PitofSaronDK.jpg] and here is another super awesome image [http://media.mmo-champion.com/images/news/2017/january/thumb/PitofSaronDK.jpg] now lets talk about things that are things because they are things.";
+  //console.log("test has been called");
+  var text = "these are the patchnotes to the lastest article on mmo-champion here is a super awseome image [http://placehold.it/350x150] and here is another super awesome image [http://media.mmo-champion.com/images/news/2017/january/thumb/PitofSaronDK.jpg] now lets talk about things that are things because they are things.";
   var i = 0;
+  var j = 0;
+  var lastWhiteSpaceIndex = 0;
+  var lastOpenBrack = 0;
+  var lastCloseBrack = 0;
+  //console.log(text);
+  //console.log(text.substring(0,4));
 
-  text ="abc[defghijklmnop";
-  console.log("true == false: ")
-  console.log(true == false);
-  console.log("text.charAt(3) == [ : ");
-  console.log(text.charAt(3) == "[");
+  while (i < text.length) {
 
+    //console.log("Begining of loop. Index: " +i);
+
+    let char = text.charAt(i);
+    //console.log("char: " + char);
+
+    if(char == " "){
+      lastWhiteSpaceIndex = i;
+    }
+    if(char == "["){
+      lastOpenBrack = i;
+    }
+    if(char == "]"){
+      lastCloseBrack = i;
+      var wrappedLink = text.substring(lastOpenBrack, lastCloseBrack + 1);
+      //console.log(wrappedLink);
+      var rawLink = text.substring(lastOpenBrack + 1, lastCloseBrack);
+      //console.log(rawLink);
+      console.log(text.substring(0, lastOpenBrack)+"\n");
+      console.log(rawLink +"\n");
+      text = text.slice(lastCloseBrack + 2);
+      i = -1;
+
+    }
+    if(i == text.length -1){
+      console.log(text + "\n");
+    }
+
+
+
+
+    i++;
+  }
 
 
 
@@ -100,7 +134,7 @@ bot.on("message", message => {
 
 
 
-    //var lastWhiteSpace = 0;
+
     // while (i < text.length) {
     //   while (i < text.length && i < 2000 - 1) {
     //
