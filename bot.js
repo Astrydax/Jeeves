@@ -55,6 +55,14 @@ bot.on("message", message => {
 
   //************************COMMANDS START HERE************************
 
+
+// .# kill command
+  if(message.content.startsWith(config.prefix + "kill")){
+    console.log("!kill command was called... Now Exiting");
+    process.exit();
+  }
+
+
 // .# RSS command DEPRECATED
   if(message.content.startsWith(config.prefix + "wownews")){
     var count = 1;
@@ -71,7 +79,7 @@ bot.on("message", message => {
   }
 // .# test command
   if(message.content.startsWith(config.prefix + "test")){
-    //test command    
+    //test command
     console.log("running test code");
   }
 // .# website command
