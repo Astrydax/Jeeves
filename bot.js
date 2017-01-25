@@ -6,18 +6,21 @@ const moment = require("moment");
 const bot = new Discord.Client();
 bot.login(config.token);
 
+var version = "1.1.3";
+
 var rssChannel;
 
-var users = JSON.parse(fs.readFileSync("./users.json", "utf8"));
+//var users = JSON.parse(fs.readFileSync("./users.json", "utf8"));
 var rss = JSON.parse(fs.readFileSync("./rss.json", "utf8"));
 
 
 bot.on("ready", () => {
   //say hello
+  console.log(`Bot version ${version}`);
   console.log(`Logged in as ${bot.user.username}!`);
   rssChannel = bot.channels.get(config.rssChannelID);
   checkForRSS();
-  setInterval(checkForRSS, 60*1000);
+  setInterval(checkForRSS, 600*1000);
 });
 
 
@@ -38,22 +41,115 @@ bot.on("voiceStateUpdate", (oldMember, member) => {
 bot.on("message", message => {
   if(message.author.bot) return;
 
-  let userData = users[message.author.id];
-  if(!userData){
-    userData = {name: message.author.username, points: 0, level: 0};
-    // var result={};
-    // // for(var key in userData) result[key]=userData[key];
-    // // for(key in config.userINIT) result[key]=config.userINIT[key];
-    // userData = result;
-    users[message.author.id] = userData;
-  }
-  userData.points++;
-  fs.writeFile("./users.json", JSON.stringify(users), (err) => {if(err) console.error(err);});
+  // let userData = users[message.author.id];
+  // if(!userData){
+  //   userData = {name: message.author.username, points: 0, level: 0};
+  //   // var result={};
+  //   // // for(var key in userData) result[key]=userData[key];
+  //   // // for(key in config.userINIT) result[key]=config.userINIT[key];
+  //   // userData = result;
+  //   users[message.author.id] = userData;
+  // }
+  // userData.points++;
+  // fs.writeFile("./users.json", JSON.stringify(users), (err) => {if(err) console.error(err);});
 
   if(!message.content.startsWith(config.prefix)) return;
   const params = message.content.split(" ").slice(1);
 
   //************************COMMANDS START HERE************************
+
+  // .# addfilter
+
+  if(message.content.startsWith(config.prefix+"addfilter")) {
+     // get number of messages to prune
+    if(message.author.id == "119351283999047682" || message.author.id == "118792784642703360")
+    {
+      let filterStr = params[0];
+      if(filterStr != "" || filterStr != null){
+        rss.filters.push(filterStr);
+        fs.writeFile("./rss.json", JSON.stringify(rss), (err) => {if(err) console.error(err);});
+      }
+    }
+  }
+
+
+  // .# Recruitment command
+  if(message.content.startsWith(config.prefix + "recruit")){
+    message.channel.sendMessage("Recruiting players in EAST TENNESSEE and surrounding areas for a localized PvE guild. An ever expanding community of WoW players located within an hours drive of one another. Participate in NH progression, guild meets, and a general good time. PST! ^_^");
+  }
+
+
+// .# Snow flake trigger
+  if(message.content.includes("safe zone") || message.content.includes("safe-zone") || message.content.includes("fuck donald trump")){
+    message.reply("https://aurorajalexander.files.wordpress.com/2017/01/snowflake.png");
+  }
+
+  // .# magicconch
+
+  if(message.content.startsWith(config.prefix + "conch" || config.prefix + "magicconch")) {
+    let voiceChannel = message.member.voiceChannel;
+    if (!voiceChannel) {
+      return message.reply("Please be in a voice channel first!");
+    }
+    var file;
+    var patrickRoll = Math.floor((Math.random() * 100) + 1);
+    var conchRoll = Math.floor((Math.random() * 7));
+    console.log("patrickRoll: " + patrickRoll);
+    console.log("conchRoll: " + conchRoll);
+    if(patrickRoll == 100){
+      file = "./audio/nothisispatrick.wav";
+    }else{
+      switch(conchRoll) {
+      case 0:
+        file = "./audio/conch0.wav";
+        break;
+      case 1:
+        file = "./audio/conch1.wav";
+        break;
+      case 2:
+        file = "./audio/conch2.wav";
+        break;
+      case 3:
+        file = "./audio/conch3.wav";
+        break;
+      case 4:
+        file = "./audio/conch4.wav";
+        break;
+      case 5:
+        file = "./audio/conch5.wav";
+        break;
+      case 6:
+        file = "./audio/conch6.wav";
+        break;
+      default:
+        file = "./audio/conch6.wav";
+      }
+    }
+
+    voiceChannel.join()
+        .then(connnection => {
+          const dispatcher = connnection.playFile(file);
+          dispatcher.on("end", () => {
+            voiceChannel.leave();
+          });
+        });
+  }
+
+// .# fuckyou command
+  if(message.content.startsWith(config.prefix + "fuckyou")) {
+    let voiceChannel = message.member.voiceChannel;
+    if (!voiceChannel) {
+      return message.reply("Please be in a voice channel first!");
+    }
+    voiceChannel.join()
+      .then(connnection => {
+        var file = "./audio/fuckyou.wav";
+        const dispatcher = connnection.playFile(file);
+        dispatcher.on("end", () => {
+          voiceChannel.leave();
+        });
+      });
+  }
 
 
 // .# kill command
@@ -84,7 +180,7 @@ bot.on("message", message => {
   }
 // .# website command
   if(message.content.startsWith(config.prefix + "website") || message.content.startsWith(config.prefix + "site")){
-    message.channel.sendMessage("Official Guild Website:  http://hardknox.enjin.com/");
+    message.channel.sendMessage("Official Guild Website:  http://www.hardknoxguild.com");
   }
 
 // ,# pawn and simc command
@@ -98,16 +194,16 @@ bot.on("message", message => {
 
 
 
-  let curLevel = Math.floor(0.1 * Math.sqrt(userData.points));
-  if(curLevel > userData.level) {
-    // Level up!
-    userData.level = curLevel;
-    message.reply(`You"ve leveled up to level **${curLevel}**! Ain"t that dandy?`);
-  }
-// .# level Command
-  if(message.content.startsWith(config.prefix + "level")) {
-    message.reply(`You are  currently level ${userData.level}, with ${userData.points} points.`);
-  }
+//   let curLevel = Math.floor(0.1 * Math.sqrt(userData.points));
+//   if(curLevel > userData.level) {
+//     // Level up!
+//     userData.level = curLevel;
+//     message.reply(`You"ve leveled up to level **${curLevel}**! Ain"t that dandy?`);
+//   }
+// // .# level Command
+//   if(message.content.startsWith(config.prefix + "level")) {
+//     message.reply(`You are  currently level ${userData.level}, with ${userData.points} points.`);
+//   }
 // .# silence command
   if(message.content.startsWith(config.prefix + "silence")) {
     let voiceChannel = message.member.voiceChannel;
@@ -123,6 +219,18 @@ bot.on("message", message => {
         });
       });
   }
+
+// .# zip command
+  if(message.content.startsWith(config.prefix+"zip") || message.content.startsWith(config.prefix+"zips")) {
+
+    if(message.author.id == "119351283999047682" || message.author.id == "118792784642703360")
+    {
+      message.channel.sendMessage("http://pastebin.com/5mLN1dQx");
+    }
+  }
+
+
+
 // .# prune command
   if(message.content.startsWith(config.prefix+"prune") || message.content.startsWith(config.prefix+"purge")) {
      // get number of messages to prune
@@ -152,7 +260,7 @@ bot.on("message", message => {
       message.reply("I can't let you do that Dave. You do not have permission to use this command.");
     }
   }
-  fs.writeFile("./users.json", JSON.stringify(users), (err) => {if(err) console.error(err);});
+  //fs.writeFile("./users.json", JSON.stringify(users), (err) => {if(err) console.error(err);});
 });
 
 function rssfeed(url,count){
@@ -187,7 +295,7 @@ function rssfeed(url,count){
       fs.writeFile("./rss.json", JSON.stringify(rss), (err) => {if(err) console.error(err);});
     //  console.log("Last RSS Item Date new: post-save" + rss.lastItemDate);
 
-    }else if (moment(item.date) >= moment(rss.lastItemDate)) {
+    }else if (moment(item.date) <= moment(rss.lastItemDate)) {
       console.log("No new article found");
       return;
     }
@@ -198,17 +306,7 @@ function rssfeed(url,count){
     rssChannel.sendMessage(item.date);
     console.log(item.date);
     parseFeed(text);
-    //rssChannel.sendMessage(text, {split:true});
-      // msg.channel.sendMessage(item.title + " - " + item.link, function() {
-      //     if(full == true){
-      //         var text2 = htmlToText.fromString(item.description,{
-      //             wordwrap:false,
-      //             ignoreHref:true
-      //         });
-      //         msg.channel.sendMessage(text2, {split:true});
-			//
-      //     }
-      // });
+
     stream.alreadyRead = true;
   });
 }
@@ -222,7 +320,7 @@ function checkForRSS(){
 
 function parseFeed(text){
   console.log("Posting Article");
-  rssChannel.sendMessage("`**************** Article Start ****************`");
+  rssChannel.sendMessage("`******************************************************************** Article Start********************************************************************");
   var i = 0;
   //var lastWhiteSpaceIndex = 0;
   var lastOpenBrack = 0;
