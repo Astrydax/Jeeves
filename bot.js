@@ -16,6 +16,7 @@ var rss = JSON.parse(fs.readFileSync("./rss.json", "utf8"));
 
 bot.on("ready", () => {
   //say hello
+
   console.log(`Bot version ${version}`);
   console.log(`Logged in as ${bot.user.username}!`);
   rssChannel = bot.channels.get(config.rssChannelID);
@@ -41,6 +42,11 @@ bot.on("voiceStateUpdate", (oldMember, member) => {
 bot.on("message", message => {
   if(message.author.bot) return;
 
+  if(message.content.includes("safe zone") || message.content.includes("safe-zone") || message.content.includes("fuck donald trump")){
+    console.log("safe zone trigger");
+    message.reply("https://aurorajalexander.files.wordpress.com/2017/01/snowflake.png");
+  }
+
   // let userData = users[message.author.id];
   // if(!userData){
   //   userData = {name: message.author.username, points: 0, level: 0};
@@ -57,6 +63,52 @@ bot.on("message", message => {
   const params = message.content.split(" ").slice(1);
 
   //************************COMMANDS START HERE************************
+  // .# classchannel
+  if(message.content.startsWith(config.prefix+"class")) {
+     // get number of messages to prune
+    var discordChannel;
+    switch(params[0]) {
+    case "death":
+      discordChannel = "https://discord.gg/0ez1cFfUH3ingV96";
+      break;
+    case "demon":
+      discordChannel = "https://discord.gg/zGGkNGC";
+      break;
+    case "druid":
+      discordChannel = "https://discord.gg/0dWu0WkuetF87H9H";
+      break;
+    case "hunter":
+      discordChannel = "https://discord.gg/yqer4BX";
+      break;
+    case "mage":
+      discordChannel = " https://discord.gg/0gLMHikX2aZ23VdA";
+      break;
+    case "monk":
+      discordChannel = " https://discord.gg/0dkfBMAxzTkWj21F";
+      break;
+    case "paladin":
+      discordChannel = "https://discord.gg/0dvRDgpa5xZHFfnD";
+      break;
+    case "priest":
+      discordChannel = "https://discord.gg/0f1Ta8lT8xXXEAIY";
+      break;
+    case "rogue":
+      discordChannel = "https://discord.gg/0h08tydxoNhfDVZf";
+      break;
+    case "shaman":
+      discordChannel = "https://discord.gg/0VcupJEQX0HuE5HH";
+      break;
+    case "warlock":
+      discordChannel = "https://discord.gg/0onXDymd9Wpc2CEu";
+      break;
+    case "warrior":
+      discordChannel = "https://discord.gg/0pYY7932lTH4FHW6";
+      break;
+
+    }
+    message.channel.sendMessage(`The ${params[0]} discord channel can be found here: ${discordChannel}`);
+  }
+
 
   // .# addfilter
 
@@ -79,10 +131,7 @@ bot.on("message", message => {
   }
 
 
-// .# Snow flake trigger
-  if(message.content.includes("safe zone") || message.content.includes("safe-zone") || message.content.includes("fuck donald trump")){
-    message.reply("https://aurorajalexander.files.wordpress.com/2017/01/snowflake.png");
-  }
+
 
   // .# magicconch
 
@@ -320,7 +369,7 @@ function checkForRSS(){
 
 function parseFeed(text){
   console.log("Posting Article");
-  rssChannel.sendMessage("`******************************************************************** Article Start********************************************************************");
+  rssChannel.sendMessage('********************************************************************Article Start********************************************************************');
   var i = 0;
   //var lastWhiteSpaceIndex = 0;
   var lastOpenBrack = 0;
