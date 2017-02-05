@@ -63,6 +63,13 @@ bot.on("message", message => {
   const params = message.content.split(" ").slice(1);
 
   //************************COMMANDS START HERE************************
+
+
+  //.# affix
+  if(message.content.startsWith(config.prefix + "affix")){
+    message.channel.sendMessage("https://mythicpl.us/");
+  }
+
   // .# classchannel
   if(message.content.startsWith(config.prefix+"class")) {
      // get number of messages to prune
@@ -114,7 +121,7 @@ bot.on("message", message => {
 
   if(message.content.startsWith(config.prefix+"addfilter")) {
      // get number of messages to prune
-    if(message.author.id == "119351283999047682" || message.author.id == "118792784642703360")
+    if(message.author.id == "119351283999047682" || message.author.id == "118792784642703360" || message.author.id == "227906065793155072")
     {
       let filterStr = params[0];
       if(filterStr != "" || filterStr != null){
@@ -283,7 +290,7 @@ bot.on("message", message => {
 // .# prune command
   if(message.content.startsWith(config.prefix+"prune") || message.content.startsWith(config.prefix+"purge")) {
      // get number of messages to prune
-    if(message.author.id == "119351283999047682" || message.author.id == "118792784642703360")
+    if(message.author.id == "119351283999047682" || message.author.id == "118792784642703360" || message.author.id == "227906065793155072")
     {
       //check if command is being used from officer channel
       if(message.channel.id == "262343491542056962"){
