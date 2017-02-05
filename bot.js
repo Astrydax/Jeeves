@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+const urban = require("urban");
 const fs = require("fs");
 const config = require("./config.json");
 const moment = require("moment");
@@ -63,6 +64,23 @@ bot.on("message", message => {
   const params = message.content.split(" ").slice(1);
 
   //************************COMMANDS START HERE************************
+
+
+//.# urbandictionary
+  if(message.content.startsWith(config.prefix + "def")){
+    var targetWord = urban(params[0]);
+    targetWord.first(function(json) {
+      if (json) {
+        var response = "" +json.word + "**\n\n" + json.definition;
+        if (json.example) {
+          response = response + "\n\n__Example__:\n" + json.example;
+        }
+        message.channel.sendMessage( response);
+      } else {
+        message.channel.sendMessage( "No matches found");
+      }
+    });
+  }
 
 
   //.# affix
