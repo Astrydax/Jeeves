@@ -152,7 +152,7 @@ bot.on("message", message => {
 
   // .# Recruitment command
   if(message.content.startsWith(config.prefix + "recruit")){
-    message.channel.sendMessage("Recruiting players in EAST TENNESSEE and surrounding areas for a localized PvE guild. An ever expanding community of WoW players located within an hours drive of one another. Participate in NH progression, guild meets, and a general good time. PST! ^_^");
+    message.channel.sendMessage("<Hard Knox> 5/10H is a newly formed guild building our progression team to push through content while always maintaining a positive, friendly atmosphere. We raid T/W/TH 9-12 CST. PST for more info!");
   }
 
 
