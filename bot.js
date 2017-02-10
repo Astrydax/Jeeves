@@ -8,7 +8,6 @@ const bot = new Discord.Client();
 bot.login(config.token);
 
 var version = "1.1.3";
-
 var rssChannel;
 
 //var users = JSON.parse(fs.readFileSync("./users.json", "utf8"));
@@ -21,6 +20,7 @@ bot.on("ready", () => {
   console.log(`Bot version ${version}`);
   console.log(`Logged in as ${bot.user.username}!`);
   rssChannel = bot.channels.get(config.rssChannelID);
+
   checkForRSS();
   setInterval(checkForRSS, 600*1000);
 });
@@ -150,9 +150,25 @@ bot.on("message", message => {
   }
 
 
+//.# stickyrecruit
+  if(message.content.startsWith(config.prefix + "sticky")){
+    if(message.author.id == config.gabby || message.author.id == config.owner){
+      //var commandStr = params;
+      var tempStr = "";
+      for (var i = 0; i < params.length; i++) {
+        tempStr = tempStr + " " + params[i];
+      }
+
+      rss.stickyrecruit = tempStr;
+      message.channel.sendMessage(tempStr);
+      fs.writeFile("./rss.json", JSON.stringify(rss), (err) => {if(err) console.error(err);});
+    }
+  }
+
   // .# Recruitment command
   if(message.content.startsWith(config.prefix + "recruit")){
-    message.channel.sendMessage("<Hard Knox> 5/10H is a newly formed guild building our progression team to push through content while always maintaining a positive, friendly atmosphere. We raid T/W/TH 9-12 CST. PST for more info!");
+    var recruitmentMSG = rss.stickyrecruit;
+    message.channel.sendMessage(recruitmentMSG);
   }
 
 
