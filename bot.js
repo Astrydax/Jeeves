@@ -9,6 +9,11 @@ var FeedParser = require("feedparser");
 var feedparser = new FeedParser();
 var request = require("request");
 var rssChannel, forniteChannel;
+//whisper truth gym entry mask used festival can rely advance rule copper
+
+String.prototype.isNumber = function() {
+  return /^\d+$/.test(this);
+};
 
 bot.login(config.token);
 
@@ -24,9 +29,9 @@ bot.on("ready", () => {
   forniteChannel = bot.channels.get(config.forniteChannel);
   //console.log(rssChannel);
   //  console.log(config.rssChannelID);
-  checkForRSS();
-  scrape();
-  setInterval(checkForRSS, 60 * 1000);
+  // checkForRSS();
+  // scrape();
+  // setInterval(checkForRSS, 60 * 1000);
 });
 
 bot.on("voiceStateUpdate", (oldMember, member) => {
@@ -69,6 +74,53 @@ bot.on("message", message => {
   const params = message.content.split(" ").slice(1);
 
   //************************COMMANDS START HERE************************
+  if (message.content.startsWith(config.prefix + "timer")) {
+    //init the descriptor string to an empty string
+    var desc = "";
+    //var descArr = [];
+    console.log(params);
+    var beg,
+      end = 0;
+    var begF,
+      endF = false;
+    for (var i = 0; i < params.length; i++) {
+      if (params[i].includes('"')) {
+        if (!begF) {
+          beg = i;
+          begF = true;
+        } else if (begF && !endF) {
+          end = i;
+          endF = true;
+        }
+      }
+    }
+    //remove the text field arguments from the list of parameters before checking for dice.
+    console.log("Beg: " + beg + " End: " + end);
+    for (i = beg; i <= end; i++) {
+      console.log("params: " + params[i]);
+      desc += " " + params[i];
+    }
+    var spliceAmnt = end + 1 - beg;
+    params.splice(beg, spliceAmnt);
+    //remove Quotes from descriptor
+    desc = desc.replace(/['"]+/g, "");
+    //set the rest of params to lowercase
+    if (params != undefined) {
+      for (i = 0; i < params.length; i++) {
+        params[i] = params[i].toLowerCase();
+      }
+
+      if (params[0].isNumber()) {
+        message.reply("Your timer has been set");
+        setTimeout(alarm, params[0] * 60 * 1000, desc, message);
+      } else {
+        message.reply(
+          'Usage: !timer [numberOfMinutes] ["description surrounded in double quotes"]'
+        );
+      }
+    }
+  }
+
   if (message.content.startsWith(config.prefix + "wownews")) {
     var count = 1;
     var url =
@@ -98,7 +150,7 @@ bot.on("message", message => {
   }
 
   if (message.content.startsWith(config.prefix + "test")) {
-    let botRole = message.member.guild.roles.find("name", "bot");
+    //let botRole = message.member.guild.roles.find("name", "bot");
     //console.log(botRole.id);
     //message.member.setVoiceChannel("270109306668580865");
   }
@@ -346,5 +398,20 @@ function followLink(href) {
         split: true
       });
     }
+  });
+}
+
+function alarm(desc, message) {
+  message.reply("Your timer for '" + desc + "', has finished");
+  let voiceChannel = message.member.voiceChannel;
+  if (!voiceChannel) {
+    return;
+  }
+  voiceChannel.join().then(connnection => {
+    var file = "./audio/alarm.wav";
+    const dispatcher = connnection.playFile(file);
+    dispatcher.on("end", () => {
+      voiceChannel.leave();
+    });
   });
 }
